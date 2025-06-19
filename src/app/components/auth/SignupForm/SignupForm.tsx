@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Input from '../../ui/Input/Input';
 import styles from './SignupForm.module.scss';
+import { useRegister } from './hooks/useRegister';
+import { useAuth } from '@/app/components/providers/AuthProvider';
 
 // Mock function to simulate checking if a username is available
 const checkUsernameAvailability = async (username: string): Promise<boolean> => {
@@ -54,6 +56,8 @@ const SignupForm = () => {
   // State for validation feedback
   const [usernameError, setUsernameError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState({ strength: '', color: '', score: 0 });
+  const { mutate: performRegister, isPending, error } = useRegister();
+  const { setUser } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -79,9 +83,40 @@ const SignupForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would handle form submission, e.g., call your API
-    console.log('Form submitted:', formData);
-    alert('Signup successful! (Check console for data)');
+
+    // Basic validation
+    if (!formData.email.trim()) {
+      alert('Email is required');
+      return;
+    }
+
+    if (!formData.username.trim()) {
+      alert('Username is required');
+      return;
+    }
+
+    if (!formData.displayName.trim()) {
+      alert('Display name is required');
+      return;
+    }
+
+    if (!formData.password.trim()) {
+      alert('Password is required');
+      return;
+    }
+
+    performRegister(formData, {
+      onSuccess: (data) => {
+        // This runs only if the API call is successful
+        setUser(data.user); // Set the user in our global context
+        alert(`Registration successful! Welcome, ${data.user.display_name}!`);
+        // Optionally redirect user here
+        // router.push('/dashboard');
+      },
+      onError: (error) => {
+        console.error('Registration error:', error);
+      }
+    });
   };
 
   return (
@@ -122,8 +157,10 @@ const SignupForm = () => {
         showPasswordStrengthIcon={passwordStrength.score >= 3}
       />
 
-      <button type="submit" className={styles.submitButton}>
-        Signup
+      {error && <p className={styles.apiError}>{error.message}</p>}
+
+      <button type="submit" className={styles.submitButton} disabled={isPending}>
+        {isPending ? 'Creating Account...' : 'Signup'}
       </button>
     </form>
   );

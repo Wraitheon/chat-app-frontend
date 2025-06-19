@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./styles/globals.scss";
+import QueryProvider from './components/providers/QueryProvider';
+import { AuthProvider } from "./components/providers/AuthProvider";
 
 // This imports the Inter font from Google Fonts.
 const inter = Inter({ subsets: ["latin"] });
@@ -18,7 +20,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </QueryProvider>
+      </body>
     </html>
   );
 }
