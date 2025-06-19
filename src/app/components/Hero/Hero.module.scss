@@ -1,0 +1,141 @@
+@import "../../styles/variables.scss";
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  padding: 0 5%;
+  padding-top: 100px; // To account for the absolute positioned header
+  position: relative;
+  gap: 2rem;
+}
+
+.content {
+  max-width: 550px;
+}
+
+.headline {
+  font-size: 55px;
+  font-weight: 400;
+  line-height: 100%;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+}
+
+.subheadline {
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+}
+
+.signupButton,
+.loginButton {
+  padding: 0.8rem 2.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.signupButton {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: 2px solid var(--color-primary);
+
+  &:hover {
+    background-color: lighten($color: #0d2c40, $amount: 5%);
+    border-color: lighten($color: #0d2c40, $amount: 5%);
+  }
+}
+
+.loginButton {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+
+  &:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+  }
+}
+
+.illustration {
+  justify-self: center; // Center the illustration within its grid cell
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.scrollIndicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  width: 12px;
+  height: 24px;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+
+  40% {
+    transform: translate(-50%, -15px);
+  }
+
+  60% {
+    transform: translate(-50%, -5px);
+  }
+}
+
+// Basic responsiveness
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding-top: 150px; // More space for header
+  }
+
+  .content {
+    grid-row: 2; // Move content below illustration
+    margin: 0 auto;
+  }
+
+  .illustration {
+    grid-row: 1;
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  .buttonGroup {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .headline {
+    font-size: 3rem;
+  }
+
+  .navigation {
+    display: none; // A real site would have a hamburger menu here
+  }
+}

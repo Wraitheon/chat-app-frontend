@@ -1,0 +1,61 @@
+@import "../../../styles/variables.scss";
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #cdd5dc;
+  background-color: var(--color-background);
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: #8fa1b0;
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(13, 44, 64, 0.1);
+  }
+
+  &.error {
+    border-color: #e53e3e;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+    }
+  }
+
+  &.success {
+    border-color: #38a169;
+  }
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.2rem;
+  min-height: 24px; // Reserve space to prevent layout shift
+  font-size: 0.8rem;
+}
+
+.helperText {
+  color: var(--color-text-light);
+}
+
+.errorText {
+  color: #e53e3e;
+}
+
+.successText {
+  color: #2f855a;
+}
