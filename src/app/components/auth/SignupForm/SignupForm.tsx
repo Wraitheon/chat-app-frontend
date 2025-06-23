@@ -6,7 +6,6 @@ import styles from './SignupForm.module.scss';
 import { useRegister } from './hooks/useRegister';
 import { useAuth } from '@/app/components/providers/AuthProvider';
 
-// Mock function to simulate checking if a username is available
 const checkUsernameAvailability = async (username: string): Promise<boolean> => {
   console.log(`Checking username: ${username}`);
   return new Promise(resolve => {
@@ -107,11 +106,8 @@ const SignupForm = () => {
 
     performRegister(formData, {
       onSuccess: (data) => {
-        // This runs only if the API call is successful
-        setUser(data.user); // Set the user in our global context
+        setUser(data.user);
         alert(`Registration successful! Welcome, ${data.user.display_name}!`);
-        // Optionally redirect user here
-        // router.push('/dashboard');
       },
       onError: (error) => {
         console.error('Registration error:', error);
@@ -142,7 +138,7 @@ const SignupForm = () => {
         placeholder="Username"
         value={formData.username}
         onChange={handleInputChange}
-        onBlur={handleUsernameBlur} // Check username when user leaves the field
+        onBlur={handleUsernameBlur}
         error={usernameError}
         helperText={!usernameError ? "Please only use numbers, letters, underscores or periods." : ""}
       />

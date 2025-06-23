@@ -1,0 +1,62 @@
+@import "../../../styles/variables.scss";
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md;
+  background-color: $color-bg-content-area;
+  border-bottom: 1px solid $color-border-default;
+  flex-shrink: 0;
+  height: 70px;
+
+  >.chatInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+
+    >.avatar {
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+    }
+
+    >.chatName {
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $color-text-primary;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: $color-ag-text-secondary;
+      }
+    }
+  }
+
+  >.chatActions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+
+    .infoButton {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: $color-ag-text-secondary;
+      padding: $spacing-xs;
+      border-radius: 50%;
+
+
+      &:hover {
+        background-color: $color-bg-hover;
+        color: $color-text-primary;
+      }
+    }
+  }
+}

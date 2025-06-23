@@ -23,7 +23,7 @@ type RegisterResponse = {
     user: User;
     token: string;
   };
-  message?: string; // Optional message for error cases
+  message?: string;
 };
 
 const registerUser = async (userData: RegistrationData): Promise<{ user: User; token: string }> => {
@@ -45,22 +45,15 @@ const registerUser = async (userData: RegistrationData): Promise<{ user: User; t
 
   console.log('Registration response status:', response.status);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.log('Registration error response:', errorData);
-    throw new Error(errorData.message || `Registration failed with status ${response.status}`);
-  }
-
   const data: RegisterResponse = await response.json();
+
+  if (!response.ok || data.status !== 'success') {
+    console.log('Registration failed:', data);
+    const errorMessage = data.message || 'Registration failed.';
+    throw new Error(errorMessage);
+  }
+
   console.log('Registration successful for user:', data.data.user.username);
-
-  if (data.status !== 'success') {
-    throw new Error(data.message || 'Registration failed.');
-  }
-
-  if (data.data.token) {
-    document.cookie = `authToken=${data.data.token}; path=/; secure; samesite=strict; max-age=${24 * 60 * 60}`; // 24 hours
-  }
 
   return data.data;
 };

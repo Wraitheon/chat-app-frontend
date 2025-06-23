@@ -1,30 +1,41 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User } from '@/types/user.types';
+import { apiClient } from '@/app/lib/apiClient';
 
-type User = {
-  id: string;
-  username: string;
-  email: string;
-  display_name: string;
-};
-
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
-  isAuthenticated: boolean;
-};
+  isLoading: boolean;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const isAuthenticated = !!user;
+  const [isLoading, setIsLoading] = useState(true);
 
-  const value = { user, setUser, isAuthenticated };
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const data = await apiClient<{ user: User }>('/users/me');
+        setUser(data.user);
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  if (isLoading) {
+  }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, setUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

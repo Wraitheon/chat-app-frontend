@@ -1,0 +1,103 @@
+@import "../../../styles/variables.scss";
+
+.secondarySidebar {
+  background-color: $color-bg-sidebar-light;
+  border-right: 1px solid $color-border-default;
+  display: flex;
+  flex-direction: column;
+
+  >.header {
+    padding: $spacing-md;
+    border-bottom: 1px solid $color-border-default;
+    flex-shrink: 0;
+
+    >h2 {
+      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: 600;
+      color: $color-text-primary;
+    }
+  }
+
+  >.channelList {
+    padding: $spacing-md $spacing-sm;
+    overflow-y: auto;
+    flex-grow: 1;
+
+    >.channelCategory {
+      margin-bottom: $spacing-lg;
+
+      >.categoryHeader {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        padding: $spacing-xs $spacing-sm;
+        color: $color-ag-text-secondary;
+        font-size: 0.9rem;
+        font-weight: 600;
+
+        >svg {
+          transition: transform 0.2s ease;
+        }
+
+        >h3 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
+        }
+      }
+
+      >.channelLink {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+        padding: $spacing-sm $spacing-md;
+        margin: $spacing-xs 0;
+        border-radius: $border-radius-sm;
+        text-decoration: none;
+        color: $color-ag-text-secondary;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: $color-bg-hover;
+          color: $color-text-primary;
+        }
+
+        &.active {
+          background-color: $color-bg-active-item;
+          color: $color-text-primary;
+          font-weight: 600;
+        }
+
+        >.channelName {
+          flex-grow: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        >.unreadBadge {
+          background-color: $color-accent-danger;
+          color: $color-text-white;
+          font-size: $font-size-xs;
+          font-weight: 600;
+          min-width: 20px;
+          height: 20px;
+          padding: 0 6px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+      }
+    }
+
+    >.loading,
+    >.error {
+      padding: $spacing-md;
+      color: $color-ag-text-secondary;
+    }
+  }
+}

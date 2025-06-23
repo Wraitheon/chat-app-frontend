@@ -4,22 +4,34 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
 
-.submitButton {
-  width: 100%;
-  padding: 0.9rem 1rem;
-  border-radius: 8px;
-  border: none;
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: background-color 0.2s ease;
+  >.submitButton {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: $border-radius-md;
+    border: none;
+    background-color: $color-primary;
+    color: $color-text-white;
+    font-size: $font-size-md;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
 
-  &:hover {
-    background-color: lighten($color: #0d2c40, $amount: 5%);
+    &:hover {
+      background-color: lighten($color-primary, 10%);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  >.apiError {
+    color: $color-accent-danger;
+    font-size: $font-size-sm;
+    text-align: center;
+    margin: 0;
   }
 }

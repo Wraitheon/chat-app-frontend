@@ -1,0 +1,188 @@
+@import "../../../styles/variables.scss";
+
+.chatPanelWrapper {
+  display: flex;
+  flex-grow: 1;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.mainContentWrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  background-color: $color-bg-content-area;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+
+%toolbar-base {
+  display: flex;
+  align-items: center;
+  padding: $spacing-xs;
+  gap: $spacing-xs;
+
+  & button {
+    background: none;
+    border: none;
+    color: $color-ag-text-secondary;
+    cursor: pointer;
+    padding: $spacing-xs;
+    border-radius: $border-radius-sm;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: $color-text-primary;
+    }
+  }
+}
+
+.chatPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  flex: 1;
+  position: relative;
+
+  >.messageArea {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: $spacing-md;
+
+    >.messageList {
+
+      >.messageItem {
+        display: flex;
+        gap: $spacing-sm;
+        margin-bottom: $spacing-md;
+
+        >.avatar {
+          >img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+          }
+        }
+
+        >.messageContent {
+
+          >.messageInfo {
+            display: flex;
+            align-items: baseline;
+            gap: $spacing-sm;
+            margin-bottom: $spacing-xxs;
+
+            >strong {
+              color: $color-text-primary;
+              font-weight: 600;
+            }
+
+            >.timestamp {
+              font-size: $font-size-xs;
+              color: $color-ag-text-secondary;
+            }
+          }
+
+          >p {
+            color: $color-text-primary;
+            line-height: 1.5;
+            margin: 0;
+
+            a {
+              color: $color-text-accent;
+              text-decoration: none;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  >.messageInputWrapper {
+    flex-shrink: 0;
+    padding: $spacing-md;
+    padding-top: 0;
+
+    >.messageInput {
+      background-color: $color-bg-message-input;
+      border: 1px solid $color-border-strong;
+      border-radius: $border-radius-lg;
+      display: flex;
+      flex-direction: column;
+      padding: $spacing-xs;
+
+      >.toolbarTop {
+        @extend %toolbar-base;
+      }
+
+      >.toolbarBottom {
+        @extend %toolbar-base;
+
+        justify-content: space-between;
+
+        >.leftActions {
+          display: flex;
+          align-items: center;
+          gap: $spacing-xs;
+        }
+
+        >.sendButton {
+          background-color: #aab8c3;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: $color-text-white;
+        }
+      }
+
+      >textarea {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: $spacing-sm;
+        color: $color-text-primary;
+        resize: none;
+        min-height: 24px;
+        font-size: $font-size-md;
+
+        &::placeholder {
+          color: $color-ag-text-secondary;
+        }
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
+
+  &.noChatSelected {
+    align-items: center;
+    justify-content: center;
+
+    >.placeholder {
+      text-align: center;
+      color: $color-ag-text-secondary;
+
+      >h2 {
+        color: $color-text-primary;
+        margin-bottom: $spacing-xs;
+      }
+
+      >p {
+        margin: 0;
+      }
+    }
+  }
+}

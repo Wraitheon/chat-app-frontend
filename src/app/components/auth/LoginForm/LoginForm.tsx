@@ -6,10 +6,13 @@ import styles from './LoginForm.module.scss';
 import Link from 'next/link';
 import { useLogin } from './hooks/useLogin';
 import { useAuth } from '@/app/components/providers/AuthProvider';
+import { useRouter } from 'next/navigation';
 
 const LoginForm = () => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
-    identifier: '', // Changed from email to identifier
+    identifier: '',
     password: '',
   });
 
@@ -24,7 +27,7 @@ const LoginForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -33,7 +36,6 @@ const LoginForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
     if (!formData.identifier.trim()) {
       setErrors(prev => ({ ...prev, identifier: 'Email or username is required' }));
       return;
@@ -52,9 +54,8 @@ const LoginForm = () => {
     performLogin(credentialsForApi, {
       onSuccess: (data) => {
         setUser(data.user);
-        alert(`Login successful! Welcome, ${data.user.display_name}!`);
-        // Optionally redirect user here
-        // router.push('/dashboard');
+
+        router.push('/chat');
       },
       onError: (error) => {
         console.error('Login error:', error);

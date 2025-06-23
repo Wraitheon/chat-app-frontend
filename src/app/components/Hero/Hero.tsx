@@ -5,19 +5,6 @@ import { Righteous, Roboto } from 'next/font/google';
 import styles from './Hero.module.scss';
 import type { FC } from 'react';
 
-// Load the Righteous font
-const righteous = Righteous({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-});
-
-const roboto = Roboto({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-})
-
 type HeroProps = {
   onSignupClick: () => void;
   onLoginClick: () => void;
@@ -27,10 +14,10 @@ const Hero: FC<HeroProps> = ({ onSignupClick, onLoginClick }: HeroProps) => {
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
-        <h1 className={`${styles.headline} ${righteous.className}`}>
+        <h1 className={`${styles.headline}`}>
           Communicate, Anywhere, Anytime
         </h1>
-        <p className={`${styles.subheadline} ${roboto.className}`}>
+        <p className={`${styles.subheadline}`}>
           Connect effortlessly across all devices with Pulse. Break free from
           limitations and redefine communication, anytime, anywhere.
         </p>

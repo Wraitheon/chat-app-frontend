@@ -1,0 +1,166 @@
+@import "../../../styles/variables.scss";
+
+%action-button-base {
+  padding: $spacing-sm $spacing-lg;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(30, 30, 40, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: $z-index-modal;
+
+  >.modalContent {
+    background: $color-bg-sidebar-light;
+    padding: $spacing-lg;
+    border-radius: $border-radius-lg;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    box-shadow: $box-shadow-popover;
+
+    >h2 {
+      margin: 0 0 $spacing-sm;
+      color: $color-text-primary;
+    }
+
+    >.formGroup {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      >label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: $color-text-primary;
+      }
+
+      >input[type="text"] {
+        padding: $spacing-sm;
+        border: 1px solid $color-border-default;
+        border-radius: $border-radius-sm;
+        font-size: 1rem;
+        background-color: $color-bg-content-area;
+
+        &:focus {
+          outline: 2px solid $color-text-accent;
+          outline-offset: -1px;
+          border-color: transparent;
+        }
+      }
+
+      >.selectedUsersContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-sm;
+        background-color: $color-bg-content-area;
+        padding: $spacing-sm;
+        border-radius: $border-radius-sm;
+        min-height: 40px;
+
+        >.userPill {
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          background-color: $color-bg-active-item;
+          color: $color-text-primary;
+          padding: $spacing-xs $spacing-sm;
+          border-radius: 16px;
+          font-weight: 500;
+          font-size: 0.85rem;
+
+          >button {
+            background: darken($color-bg-active-item, 10%);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: $color-text-primary;
+
+            &:hover {
+              background: darken($color-bg-active-item, 15%);
+            }
+          }
+        }
+      }
+    }
+
+    >.searchResults {
+      border: 1px solid $color-border-default;
+      border-radius: $border-radius-sm;
+      max-height: 150px;
+      overflow-y: auto;
+
+      >.info {
+        padding: $spacing-lg;
+        text-align: center;
+        color: $color-ag-text-secondary;
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+
+      >.userItem {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        padding: $spacing-sm;
+        cursor: pointer;
+
+        &:hover {
+          background-color: $color-bg-hover;
+        }
+
+        >img {
+          border-radius: 50%;
+        }
+      }
+    }
+
+    >.actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-md;
+      margin-top: $spacing-md;
+
+      >.cancelButton {
+        @extend %action-button-base;
+        background: none;
+        border: 1px solid $color-border-default;
+        color: $color-text-primary;
+
+        &:hover {
+          background-color: $color-bg-hover;
+        }
+      }
+
+      >.createButton {
+        @extend %action-button-base;
+        background-color: $color-bg-nav-dark;
+        color: $color-text-white;
+
+        &:hover {
+          background-color: lighten($color-bg-nav-dark, 10%);
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,3 @@
-// The 'use client' directive is necessary for components that use hooks like useState.
-// If your dropdown is interactive, you'll need this.
-// 'use client';
-
 import Image from "next/image";
 import Link from "next/link";
 import { Saira_Stencil_One, Roboto } from 'next/font/google'
