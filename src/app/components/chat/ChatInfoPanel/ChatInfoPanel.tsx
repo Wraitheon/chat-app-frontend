@@ -7,6 +7,7 @@ import { useManageChatMembers } from './hooks/useManageChatMembers';
 import { useState } from 'react';
 import AddMemberModal from '../../ui/AddMemberModal/AddMemberModal';
 import { useAuth } from '@/app/components/providers/AuthProvider';
+import { getDisplayPictureUrl } from '@/app/lib/assetUtils';
 
 interface ChatInfoPanelProps {
   isOpen: boolean;
@@ -57,7 +58,10 @@ const ChatInfoPanel = ({ isOpen, onClose, chatDetails }: ChatInfoPanelProps) => 
             {chatDetails.members.map(member => (
               <li key={member.id} className={styles.memberItem}>
                 <div className={styles.memberInfo}>
-                  <img src="/assets/default-avatar.png" alt="avatar" />
+                  <img
+                    src={getDisplayPictureUrl(member.display_picture_url)}
+                    alt="avatar"
+                  />
                   <span>{member.display_name}</span>
                   {member.id === chatDetails.creator_id && <span className={styles.creatorBadge}>Admin</span>}
                 </div>

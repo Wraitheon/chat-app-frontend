@@ -1,5 +1,3 @@
-import { User } from './user.types';
-
 export interface Chat {
   id: string;
   type: 'group' | 'direct';
@@ -18,6 +16,7 @@ export interface Chat {
 export interface ChatMember {
   id: string;
   display_name: string;
+  display_picture_url: string | null;
 }
 
 export interface ChatDetails {
@@ -31,22 +30,12 @@ export interface ChatDetails {
   members: ChatMember[];
 }
 
-export interface ChatsData {
-  chats: Chat[];
-}
-
 export interface NewChatData {
-  chat: Chat;
-}
-
-export interface ChatDetailData {
-  chat: ChatDetails;
-}
-
-export interface ChatDetailApiResponse {
-  chat: ChatDetails | PromiseLike<ChatDetails>;
-  success: boolean;
-  data: {
-    chat: ChatDetails;
-  };
+  id: string;
+  type: 'group' | 'direct';
+  group_name: string | null;
+  group_avatar_url: string | null;
+  creator_id: string;
+  created_at: string;
+  updated_at: string;
 }

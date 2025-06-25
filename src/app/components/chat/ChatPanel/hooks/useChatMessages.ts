@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchChatMessages } from '@/app/services/chatService';
+import { fetchChatMessages } from '@/app/services/messageService';
 
 export const useChatMessages = (chatId: string | null) => {
   return useQuery({

@@ -4,6 +4,7 @@ import "./styles/globals.scss";
 import QueryProvider from './components/providers/QueryProvider';
 import { AuthProvider } from "./components/providers/AuthProvider";
 import { righteous, roboto } from './fonts';
+import { SocketProvider } from './components/providers/SocketProvider';
 
 // This imports the Inter font from Google Fonts.
 const inter = Inter({ subsets: ["latin"] });
@@ -28,7 +29,9 @@ export default function RootLayout({
       }}`}>
         <QueryProvider>
           <AuthProvider>
-            {children}
+            <SocketProvider>
+              {children}
+            </SocketProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

@@ -6,6 +6,7 @@ import styles from './SearchResults.module.scss';
 import { useSearchUsers } from './hooks/useSearchUsers';
 import { useCreateChat } from './hooks/useCreateChat';
 import { User } from '@/types/user.types';
+import { useDebounce } from '@/app/hooks/useDebounce';
 
 interface SearchResultsProps {
   searchTerm: string;
@@ -14,7 +15,9 @@ interface SearchResultsProps {
 
 const SearchResults = ({ searchTerm, onResultClick }: SearchResultsProps) => {
   const router = useRouter();
-  const { data: users, isLoading } = useSearchUsers(searchTerm);
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 400);
+  const { data: users, isLoading } = useSearchUsers(debouncedSearchTerm);
   const { mutate: createNewChat, isPending: isCreating } = useCreateChat();
 
   const handleUserClick = (user: User) => {
@@ -52,6 +55,7 @@ const SearchResults = ({ searchTerm, onResultClick }: SearchResultsProps) => {
           </div>
         </div>
       ))}
+
       {users?.length === 0 && !isLoading && <div className={styles.info}>No users found.</div>}
     </div>
   );

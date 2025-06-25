@@ -1,8 +1,23 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export const API_ROUTES = {
   auth: {
-    login: `${API_BASE_URL}/auth/login`,
-    register: `${API_BASE_URL}/auth/register`,
+    login: '/auth/login',
+    register: '/auth/register',
   },
+  users: {
+    search: (query: string) => `/users/?search=${query}`,
+    getUser: `/me`,
+    updateUser: `me`,
+  },
+  chats: {
+    getChats: `/chats/`,
+    getChatDetails: (chatId: string) => `/chats/${chatId}`,
+    addMemberToChat: (chatId: string) => `/chats/${chatId}/members`,
+    removeMemberFromChat: (chatId: string, userId: string) => `/chats/${chatId}/members/${userId}`,
+    markChatAsRead: (chatId: string) => `/chats/${chatId}/read`,
+    createChat: `/chats`,
+    updateChatDetails: (chatId: string) => `/api/chats/${chatId}`,
+  },
+  messages: {
+    getMessages: (chatId: string) => `/chats/${chatId}/messages`,
+  }
 };

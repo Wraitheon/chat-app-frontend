@@ -5,6 +5,7 @@
   border-right: 1px solid $color-border-default;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 
   >.header {
     padding: $spacing-md;
@@ -35,9 +36,11 @@
         color: $color-ag-text-secondary;
         font-size: 0.9rem;
         font-weight: 600;
+        cursor: pointer;
+        user-select: none;
 
         >svg {
-          transition: transform 0.2s ease;
+          transition: transform 0.3s ease-in-out;
         }
 
         >h3 {
@@ -45,9 +48,25 @@
           font-size: inherit;
           font-weight: inherit;
         }
+
+        &.expanded {
+          >svg {
+            transform: rotate(90deg);
+          }
+        }
       }
 
-      >.channelLink {
+      .collapsibleList {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.35s ease-in-out;
+
+        &.expanded {
+          max-height: 50vh;
+        }
+      }
+
+      .channelLink {
         display: flex;
         align-items: center;
         gap: $spacing-md;

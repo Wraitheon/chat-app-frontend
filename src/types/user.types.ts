@@ -5,8 +5,5 @@ export interface User {
   display_name: string;
   display_picture_url?: string | null;
   status_message?: string | null;
-}
-
-export interface UsersData {
-  users: User[];
+  created_at: string;
 }

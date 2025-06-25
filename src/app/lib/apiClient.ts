@@ -1,6 +1,6 @@
 import { ApiResponse, ApiErrorResponse, ApiErrorPayload } from "@/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5005';
 
 export class ApiClientError extends Error {
   public readonly statusCode: number;

@@ -6,9 +6,6 @@ export interface Message {
   created_at: string;
   sender_username: string;
   sender_display_name: string;
-  sender_display_picture_url: string | null;
-}
-
-export interface MessagesData {
-  messages: Message[];
+  sender_display_picture_path?: string | null;
+  sender_display_picture_url?: string | null;
 }

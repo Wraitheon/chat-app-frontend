@@ -1,16 +1,30 @@
 import { apiClient } from '@/app/lib/apiClient';
-import { UsersData } from '@/types/user.types';
+import { User } from '@/types/user.types';
+import { API_ROUTES } from '../lib/apiRoutes';
 
-/**
- * Searches for users based on a query string.
- * @param query The search term.
- * @returns A promise that resolves to an array of User objects.
- */
-export const searchUsers = async (query: string) => {
+export const searchUsers = async (query: string): Promise<User[]> => {
   if (!query.trim()) {
-    // Don't make an API call for an empty query
     return [];
   }
-  const data = await apiClient<UsersData>(`/users/?search=${query}`);
-  return data.users;
+
+  const endpoint = API_ROUTES.users.search(query);
+
+  return await apiClient<User[]>(endpoint);
 };
+
+export const getUser = async (): Promise<User> => {
+  const endpoint = API_ROUTES.users.getUser;
+  return await apiClient<User>(endpoint);
+}
+
+export const updateUserDetails = async (payload: {
+  display_name?: string;
+  profile_picture?: string;
+}): Promise<User> => {
+  const endpoint = API_ROUTES.users.updateUser;
+
+  return await apiClient<User>(endpoint, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}

@@ -1,7 +1,6 @@
-// app/components/chat/SecondarySidebar/SecondarySidebar.tsx
-
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import styles from './SecondarySidebar.module.scss';
 import { HiUserGroup, HiChatBubbleLeftRight, HiChevronRight } from 'react-icons/hi2';
@@ -16,7 +15,10 @@ interface SecondarySidebarProps {
 const SecondarySidebar = ({ activeChatId }: SecondarySidebarProps) => {
   const { data: chats, isLoading, isError, error } = useUserChats();
   const { mutate: markAsRead } = useMarkAsRead();
-
+  const [isExpanded, setIsExpanded] = useState({
+    groups: true,
+    directMessages: true,
+  });
   const groupChats = chats?.filter(chat => chat.type === 'group');
   const directMessages = chats?.filter(chat => chat.type === 'direct');
 
@@ -24,6 +26,13 @@ const SecondarySidebar = ({ activeChatId }: SecondarySidebarProps) => {
     if (parseInt(chat.unread_count, 10) > 0) {
       markAsRead(chat.id);
     }
+  };
+
+  const toggleCategory = (category: keyof typeof isExpanded) => {
+    setIsExpanded(prevState => ({
+      ...prevState,
+      [category]: !prevState[category],
+    }));
   };
 
   const renderChannelLink = (chat: Chat) => {
@@ -58,18 +67,33 @@ const SecondarySidebar = ({ activeChatId }: SecondarySidebarProps) => {
         {chats && (
           <>
             <div className={styles.channelCategory}>
-              <div className={styles.categoryHeader}>
+              <div
+                className={`${styles.categoryHeader} ${isExpanded.groups ? styles.expanded : ''}`}
+                onClick={() => toggleCategory('groups')}
+              >
                 <HiChevronRight size={16} />
                 <h3>Groups</h3>
               </div>
-              {groupChats?.map(renderChannelLink)}
+              <div
+                className={`${styles.collapsibleList} ${isExpanded.groups ? styles.expanded : ''}`}
+              >
+                {groupChats?.map(renderChannelLink)}
+              </div>
             </div>
+
             <div className={styles.channelCategory}>
-              <div className={styles.categoryHeader}>
+              <div
+                className={`${styles.categoryHeader} ${isExpanded.directMessages ? styles.expanded : ''}`}
+                onClick={() => toggleCategory('directMessages')}
+              >
                 <HiChevronRight size={16} />
                 <h3>Direct Messages</h3>
               </div>
-              {directMessages?.map(renderChannelLink)}
+              <div
+                className={`${styles.collapsibleList} ${isExpanded.directMessages ? styles.expanded : ''}`}
+              >
+                {directMessages?.map(renderChannelLink)}
+              </div>
             </div>
           </>
         )}

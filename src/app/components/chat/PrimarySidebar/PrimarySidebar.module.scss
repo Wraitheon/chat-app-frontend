@@ -1,5 +1,19 @@
 @import "../../../styles/variables.scss";
 
+// --- Keyframes for menu animation ---
+@keyframes menu-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// --- Reusable Placeholders ---
 %icon-container-base {
   width: 40px;
   height: 40px;
@@ -31,10 +45,11 @@
 
   &.active {
     color: $color-text-white;
-    background-color: $color-text-primary;
+    background-color: $color-primary;
   }
 }
 
+// --- Component Styles ---
 .primarySidebar {
   background-color: $color-bg-nav-dark;
   padding: $spacing-md 0;
@@ -44,16 +59,12 @@
   justify-content: space-between;
   height: 100%;
 
-  >.topSection,
-  >.bottomSection {
+  >.topSection {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: $spacing-lg;
     width: 100%;
-  }
-
-  >.topSection {
 
     >.workspaceLogo {
       @extend %icon-container-base;
@@ -74,14 +85,71 @@
   }
 
   >.bottomSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-lg;
+    width: 100%;
+    position: relative; // Anchor for the popover menu
 
     >.navButton {
       @extend %nav-button-base;
     }
 
-    >.userAvatar {
+    // The avatar is now a clickable button
+    >.userAvatarButton {
       @extend %icon-container-base;
       border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent; // For a nice focus/hover outline effect
+      padding: 0;
+      transition: border-color 0.2s ease;
+
+      &:hover,
+      &:focus {
+        border-color: $color-primary;
+      }
+    }
+
+    // ✅ The new user popover menu
+    >.userMenu {
+      position: absolute;
+      bottom: 100%; // Position it above the avatar
+      left: 55px; // Position it to the right of the sidebar
+      margin-bottom: $spacing-sm; // Add a small gap
+      width: 200px;
+      background-color: $color-bg-nav-dark;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: $border-radius-md;
+      box-shadow: $box-shadow-popover;
+      padding: $spacing-sm;
+      z-index: $z-index-panel;
+      animation: menu-fade-in 0.15s ease-out;
+
+      >.menuButton {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+        width: 100%;
+        padding: $spacing-sm $spacing-md;
+        background: none;
+        border: none;
+        color: $color-ag-text-secondary;
+        text-align: left;
+        border-radius: $border-radius-sm;
+        cursor: pointer;
+        font-size: $font-size-sm;
+
+        &:hover {
+          color: $color-text-white;
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &:disabled {
+          color: $color-ag-text-secondary;
+          cursor: not-allowed;
+        }
+      }
     }
   }
 }
