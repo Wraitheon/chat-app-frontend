@@ -89,6 +89,30 @@
           font-weight: 600;
         }
 
+        .avatarContainer {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .statusIndicator {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          border: 2px solid $color-bg-sidebar-light;
+          background-color: #747f8d;
+          transition: background-color 0.3s ease;
+
+          &.online {
+            background-color: #2ecc71;
+          }
+        }
+
+
         >.channelName {
           flex-grow: 1;
           white-space: nowrap;

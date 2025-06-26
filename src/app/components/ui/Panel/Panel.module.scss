@@ -1,0 +1,116 @@
+// src/components/ui/Panel/Panel.module.scss
+
+// The wrapper controls the visibility of the panel and its backdrop.
+.panelWrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none; // Non-interactive by default
+  visibility: hidden; // Hidden by default
+
+  // The panel itself starts off-screen to the right.
+  .panel {
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  // The backdrop starts fully transparent.
+  .panelBackdrop {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  // When the wrapper gets the .isOpen class:
+  &.isOpen {
+    pointer-events: auto; // Becomes interactive
+    visibility: visible; // Becomes visible
+
+    // Slide in the panel
+    .panel {
+      transform: translateX(0);
+    }
+
+    // Fade in the backdrop
+    .panelBackdrop {
+      opacity: 1;
+    }
+  }
+}
+
+// The main panel container
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 360px;
+  max-width: 90vw;
+  background-color: var(--color-bg-content-area, #ffffff);
+  border-left: 1px solid var(--color-border-default, #e0e0e0);
+  box-shadow: -2px 0 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+// --- Inner panel styles (No changes needed below this line) ---
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-default, #e0e0e0);
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  >h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary, #6b7280);
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+
+  &:hover {
+    background-color: var(--color-bg-hover, #f3f4f6);
+    color: var(--color-text-primary, #111827);
+  }
+}
+
+.panelContent {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.panelFooter {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border-default, #e0e0e0);
+  background-color: var(--color-bg-content-area, #ffffff);
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}

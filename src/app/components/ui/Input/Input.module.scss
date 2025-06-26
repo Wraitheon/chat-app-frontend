@@ -13,20 +13,17 @@
     font-size: $font-size-md;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    // --- Default State Styling (to match target image) ---
-    background-color: $color-bg-sidebar-light; // The light gray background
-    border: 1px solid $color-border-default; // A subtle default border
-    color: $color-text-primary; // Dark text for what's typed
+    background-color: $color-bg-sidebar-light;
+    border: 1px solid $color-border-default;
+    color: $color-text-primary;
 
     &::placeholder {
-      color: $color-ag-text-secondary; // Standard placeholder color
+      color: $color-ag-text-secondary;
     }
 
-    // --- State Styling ---
     &:focus {
-      border-color: $color-text-accent; // Blue border on focus
-      box-shadow: 0 0 0 3px rgba($color-text-accent, 0.2); // Blue outer glow
+      border-color: $color-text-accent;
+      box-shadow: 0 0 0 3px rgba($color-text-accent, 0.2);
     }
 
     &.error {
@@ -46,16 +43,14 @@
     }
   }
 
-  // The container for helper/error/success text below the input.
   >.message {
     display: flex;
     align-items: center;
     gap: $spacing-xs;
     padding: 0 $spacing-xs;
-    min-height: 20px; // Reserve space to prevent layout shift
+    min-height: 20px;
     font-size: $font-size-sm;
 
-    // --- Children of the message container ---
     >.helperText {
       color: $color-ag-text-secondary; // Use the standard secondary color
     }

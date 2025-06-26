@@ -1,13 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addMemberToChat, removeMemberFromChat } from '@/app/services/chatService';
-import { toast } from 'react-hot-toast'; // Assuming you have a toast library
+import { toast } from 'react-hot-toast';
 
 export const useManageChatMembers = (chatId: string) => {
   const queryClient = useQueryClient();
 
   const onSuccess = () => {
-    // When a member is added or removed, refetch the chat details
-    // to update the member list in the UI.
     queryClient.invalidateQueries({ queryKey: ['chatDetails', chatId] });
   };
 

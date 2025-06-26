@@ -6,7 +6,6 @@ export const useChatDetails = (chatId: string | null) => {
     queryKey: ['chatDetails', chatId],
     queryFn: () => fetchChatDetails(chatId!),
     enabled: !!chatId,
-    // Optional: Add staleTime to avoid refetching too often
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 };

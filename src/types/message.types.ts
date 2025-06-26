@@ -3,6 +3,7 @@ export interface Message {
   chat_id: string;
   sender_id: string;
   text_content: string;
+  image_data_url: string | null;
   created_at: string;
   sender_username: string;
   sender_display_name: string;

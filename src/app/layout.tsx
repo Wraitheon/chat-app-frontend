@@ -31,6 +31,7 @@ export default function RootLayout({
           <AuthProvider>
             <SocketProvider>
               {children}
+              <div id="modal-root" />
             </SocketProvider>
           </AuthProvider>
         </QueryProvider>

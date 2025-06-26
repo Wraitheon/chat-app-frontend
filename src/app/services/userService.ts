@@ -17,14 +17,11 @@ export const getUser = async (): Promise<User> => {
   return await apiClient<User>(endpoint);
 }
 
-export const updateUserDetails = async (payload: {
-  display_name?: string;
-  profile_picture?: string;
-}): Promise<User> => {
+export const updateUserDetails = async ({ formData }: { formData: FormData }): Promise<User> => {
   const endpoint = API_ROUTES.users.updateUser;
 
   return await apiClient<User>(endpoint, {
     method: 'PATCH',
-    body: JSON.stringify(payload),
+    body: formData,
   });
-}
+};

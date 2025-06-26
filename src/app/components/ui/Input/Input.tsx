@@ -34,7 +34,6 @@ const Input = ({
 }: InputProps) => {
   const status = error ? 'error' : successText ? 'success' : 'default';
 
-  // Simple checkmark icon using CSS/Unicode instead of SVG
   const CheckmarkIcon = () => (
     <span className={styles.checkmarkIcon}>✓</span>
   );
@@ -52,16 +51,13 @@ const Input = ({
         autoComplete="off"
       />
       <div className={styles.message}>
-        {/* Show password strength icon or regular icon */}
         {showPasswordStrengthIcon && <CheckmarkIcon />}
         {icon && status === 'success' && !showPasswordStrengthIcon && (
           <Image src={icon} alt="success icon" width={16} height={16} />
         )}
 
-        {/* Error message */}
         {error && <p className={styles.errorText}>{error}</p>}
 
-        {/* Helper text with optional custom color */}
         {helperText && (
           <p
             className={styles.helperText}
@@ -71,7 +67,6 @@ const Input = ({
           </p>
         )}
 
-        {/* Success text */}
         {successText && <p className={styles.successText}>{successText}</p>}
       </div>
     </div>

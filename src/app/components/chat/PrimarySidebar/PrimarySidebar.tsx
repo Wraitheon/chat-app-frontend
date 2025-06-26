@@ -5,19 +5,22 @@ import Image from 'next/image';
 import styles from './PrimarySidebar.module.scss';
 import {
   HiHome, HiBell, HiChatBubbleOvalLeftEllipsis, HiEllipsisHorizontal, HiPlus,
-  HiCog6Tooth, HiArrowLeftOnRectangle // Icons for the new menu
+  HiCog6Tooth, HiArrowLeftOnRectangle
 } from 'react-icons/hi2';
 import { useLogout } from './hooks/useLogout';
+import { useAuth } from '../../providers/AuthProvider';
 
 interface PrimarySidebarProps {
   onCreateGroupClick: () => void;
+  setCurrentPanel: (panel: "user" | "chat" | null) => void;
 }
 
-const PrimarySidebar = ({ onCreateGroupClick }: PrimarySidebarProps) => {
+const PrimarySidebar = ({ onCreateGroupClick, setCurrentPanel }: PrimarySidebarProps) => {
   const [activeIcon, setActiveIcon] = useState('Home');
   const [isMenuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { mutate: performLogout, isPending: isLoggingOut } = useLogout();
+  const { user: currentUser } = useAuth();
 
   const navItems = [
     { name: 'Home', icon: <HiHome size={24} /> },
@@ -71,21 +74,25 @@ const PrimarySidebar = ({ onCreateGroupClick }: PrimarySidebarProps) => {
           <HiPlus size={24} />
         </button>
 
-        {/* The clickable user avatar that opens the menu */}
         <button
           className={styles.userAvatarButton}
           onClick={() => setMenuOpen(prev => !prev)}
           aria-label="User menu"
+          disabled={!currentUser}
         >
-          <Image src="/assets/default-avatar.png" alt="User Avatar" width={40} height={40} />
+          <Image
+            src='/assets/default-avatar.png'
+            alt="User Avatar"
+            width={40}
+            height={40}
+          />
         </button>
 
-        {/* The User Popover Menu */}
         {isMenuOpen && (
           <div ref={menuRef} className={styles.userMenu}>
-            <button className={styles.menuButton}>
+            <button className={styles.menuButton} onClick={() => { setCurrentPanel("user"); setMenuOpen(false); }}>
               <HiCog6Tooth size={20} />
-              <span>Settings</span>
+              <span>Profile Settings</span>
             </button>
             <button
               className={styles.menuButton}

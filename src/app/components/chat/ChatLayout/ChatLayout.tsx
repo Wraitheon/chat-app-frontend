@@ -7,7 +7,12 @@ import ChatPanel from '../ChatPanel/ChatPanel';
 import SearchResults from '../../ui/SearchResults/SearchResults';
 import styles from './ChatLayout.module.scss';
 import { HiMagnifyingGlass } from 'react-icons/hi2';
-import CreateGroupChatModal from '../../ui/CreateGroupChatModal/CreateGroupChatModal';
+import CreateGroupChatModal from '../CreateGroupChatModal/CreateGroupChatModal';
+import UserInfoPanel from '../UserInfoPanel/UserInfoPanel';
+import ChatInfoPanel from '../ChatInfoPanel/ChatInfoPanel';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../../providers/AuthProvider';
+import { useChatDetails } from '../ChatHeader/hooks/useChatDetails';
 
 interface ChatLayoutProps {
   initialActiveChatId?: string | null;
@@ -18,6 +23,22 @@ const ChatLayout = ({ initialActiveChatId = null }: ChatLayoutProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [isGroupModalOpen, setGroupModalOpen] = useState(false);
+  const [currentPanel, setCurrentPanel] = useState<"user" | "chat" | null>(null);
+
+  const queryClient = useQueryClient();
+  const { user: currentUser } = useAuth();
+  const { data: chatDetails } = useChatDetails(activeChatId);
+
+  const handleUserUpdate = () => {
+    queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+  };
+
+  const handleChatUpdate = () => {
+    if (activeChatId) {
+      queryClient.invalidateQueries({ queryKey: ['chatDetails', activeChatId] });
+      queryClient.invalidateQueries({ queryKey: ['chats'] });
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -66,13 +87,36 @@ const ChatLayout = ({ initialActiveChatId = null }: ChatLayoutProps) => {
           </header>
 
           <div className={styles.mainContent}>
-            <PrimarySidebar onCreateGroupClick={() => setGroupModalOpen(true)} />
+            <PrimarySidebar
+              onCreateGroupClick={() => setGroupModalOpen(true)}
+              setCurrentPanel={setCurrentPanel}
+            />
             <SecondarySidebar activeChatId={activeChatId} />
-
-            <ChatPanel activeChatId={activeChatId} />
+            <ChatPanel
+              activeChatId={activeChatId}
+              setCurrentPanel={setCurrentPanel}
+            />
           </div>
         </div>
       </div>
+
+      {currentUser && (
+        <UserInfoPanel
+          isOpen={currentPanel === 'user'}
+          onClose={() => setCurrentPanel(null)}
+          userDetails={currentUser}
+          onUserUpdate={handleUserUpdate}
+        />
+      )}
+
+      {chatDetails && (
+        <ChatInfoPanel
+          isOpen={currentPanel === 'chat'}
+          onClose={() => setCurrentPanel(null)}
+          chatDetails={chatDetails}
+          onChatUpdate={handleChatUpdate}
+        />
+      )}
     </>
   );
 };

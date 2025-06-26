@@ -39,3 +39,9 @@ export interface NewChatData {
   created_at: string;
   updated_at: string;
 }
+
+export interface CreateChatPayload {
+  members: string[];
+  group_name?: string;
+  group_avatar?: File | null;
+}

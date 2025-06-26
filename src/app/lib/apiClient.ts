@@ -14,25 +14,40 @@ export class ApiClientError extends Error {
   }
 }
 
+const normalizeHeaders = (input?: HeadersInit): Record<string, string> => {
+  if (!input) return {};
+
+  if (input instanceof Headers) {
+    const headersObj: Record<string, string> = {};
+    input.forEach((value, key) => {
+      headersObj[key] = value;
+    });
+    return headersObj;
+  }
+
+  if (Array.isArray(input)) {
+    return Object.fromEntries(input) as Record<string, string>;
+  }
+
+  return { ...input };
+};
+
 export const apiClient = async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
-  // Pass the options object as the second argument to fetch
+  const rawHeaders = normalizeHeaders(options?.headers);
+  if (options?.body instanceof FormData) {
+    delete rawHeaders['Content-Type'];
+  } else {
+    if (!rawHeaders['Content-Type']) {
+      rawHeaders['Content-Type'] = 'application/json';
+    }
+  }
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    // It's good practice to spread incoming options first,
-    // in case you want to enforce certain defaults later.
     ...options,
-
-    // Then define or override headers
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-
-    // ✅✅✅ THIS IS THE FIX ✅✅✅
-    // The credentials property is now correctly placed INSIDE the options object.
+    headers: rawHeaders,
     credentials: 'include',
   });
 
-  // --- The rest of your error handling block is perfect and needs no changes ---
   if (!response.ok) {
     let errorPayload: ApiErrorPayload;
     try {

@@ -1,6 +1,5 @@
 @import "../../../styles/variables.scss";
 
-// --- Keyframes for menu animation ---
 @keyframes menu-fade-in {
   from {
     opacity: 0;
@@ -13,7 +12,6 @@
   }
 }
 
-// --- Reusable Placeholders ---
 %icon-container-base {
   width: 40px;
   height: 40px;
@@ -49,7 +47,6 @@
   }
 }
 
-// --- Component Styles ---
 .primarySidebar {
   background-color: $color-bg-nav-dark;
   padding: $spacing-md 0;
@@ -90,18 +87,17 @@
     align-items: center;
     gap: $spacing-lg;
     width: 100%;
-    position: relative; // Anchor for the popover menu
+    position: relative;
 
     >.navButton {
       @extend %nav-button-base;
     }
 
-    // The avatar is now a clickable button
     >.userAvatarButton {
       @extend %icon-container-base;
       border-radius: 50%;
       cursor: pointer;
-      border: 2px solid transparent; // For a nice focus/hover outline effect
+      border: 2px solid transparent;
       padding: 0;
       transition: border-color 0.2s ease;
 
@@ -111,18 +107,15 @@
       }
     }
 
-    // ✅ The new user popover menu
     >.userMenu {
       position: absolute;
-      bottom: 100%; // Position it above the avatar
-      left: 55px; // Position it to the right of the sidebar
-      margin-bottom: $spacing-sm; // Add a small gap
+      left: 4.8rem;
+      margin-bottom: $spacing-sm;
       width: 200px;
       background-color: $color-bg-nav-dark;
-      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: $border-radius-md;
       box-shadow: $box-shadow-popover;
-      padding: $spacing-sm;
+      padding: $spacing-md;
       z-index: $z-index-panel;
       animation: menu-fade-in 0.15s ease-out;
 

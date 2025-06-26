@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import styles from './ChatPanel.module.scss';
 import Image from 'next/image';
 import {
   HiOutlinePaperAirplane, HiOutlinePaperClip, HiOutlineVideoCamera,
-  HiOutlineMicrophone, HiOutlineFaceSmile, HiPlus, HiCodeBracket
+  HiOutlineMicrophone, HiOutlineFaceSmile, HiPlus, HiCodeBracket, HiXCircle
 } from 'react-icons/hi2';
 import { FaBold, FaItalic, FaListUl, FaListOl, FaLink } from 'react-icons/fa';
 import { Message } from '@/types/message.types';
@@ -13,129 +12,161 @@ import { Message } from '@/types/message.types';
 import ChatHeader from '../ChatHeader/ChatHeader';
 import { useChatMessages } from './hooks/useChatMessages';
 import { useChatDetails } from '../ChatHeader/hooks/useChatDetails';
-import ChatInfoPanel from '../ChatInfoPanel/ChatInfoPanel';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSocket } from '@/app/components/providers/SocketProvider';
 import { getDisplayPictureUrl } from '@/app/lib/assetUtils';
+import { useEffect, useRef, useState } from 'react';
+
+interface TypingUser {
+  id: string;
+  display_name: string;
+}
 
 interface ChatPanelProps {
   activeChatId: string | null;
+  setCurrentPanel: (panel: "chat" | "user" | null) => void;
 }
 
-const ChatPanel = ({ activeChatId }: ChatPanelProps) => {
-  // --- HOOKS & STATE ---
+const ChatPanel = ({ activeChatId, setCurrentPanel }: ChatPanelProps) => {
   const { socket, isConnected } = useSocket();
   const queryClient = useQueryClient();
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [messageText, setMessageText] = useState('');
-  const [isInfoPanelOpen, setInfoPanelOpen] = useState(false);
-  const [isInfoPanelMounted, setInfoPanelMounted] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
 
   const { data: messages, isLoading: isMessagesLoading, isError, error } = useChatMessages(activeChatId);
   const { data: chatDetails, isLoading: isDetailsLoading } = useChatDetails(activeChatId);
 
-  // --- SOCKET.IO REAL-TIME LOGIC ---
   useEffect(() => {
-    // We need an active socket connection and a selected chat to proceed.
     if (!socket || !isConnected || !activeChatId) return;
-
-    // 1. Join the room for the active chat to receive messages.
     socket.emit('join_room', activeChatId);
-    console.log(`Socket joined room: ${activeChatId}`);
-
-    // 2. Set up a listener for new messages.
     const handleNewMessage = (newMessage: Message) => {
-      // Check if the incoming message belongs to the currently active chat.
       if (newMessage.chat_id === activeChatId) {
-        // This is the best practice: update the React Query cache directly.
-        // It provides an instant UI update without needing a re-fetch.
         queryClient.setQueryData(['messages', activeChatId], (oldData: Message[] | undefined) => {
           if (!oldData) return [newMessage];
           return [...oldData, newMessage];
         });
       }
     };
-
+    const handleUserTyping = (data: { chat_id: string, user: TypingUser }) => {
+      if (data.chat_id === activeChatId) {
+        setTypingUsers(prev => !prev.find(u => u.id === data.user.id) ? [...prev, data.user] : prev);
+      }
+    };
+    const handleUserStoppedTyping = (data: { chat_id: string, user: { id: string } }) => {
+      if (data.chat_id === activeChatId) {
+        setTypingUsers(prev => prev.filter(u => u.id !== data.user.id));
+      }
+    };
     socket.on('new_message', handleNewMessage);
-
-    // 3. CRUCIAL: Clean up the listener when the component unmounts
-    // or when the user switches to a different chat.
+    socket.on('user_typing', handleUserTyping);
+    socket.on('user_stopped_typing', handleUserStoppedTyping);
     return () => {
       socket.off('new_message', handleNewMessage);
+      socket.off('user_typing', handleUserTyping);
+      socket.off('user_stopped_typing', handleUserStoppedTyping);
     };
-  }, [socket, isConnected, activeChatId, queryClient]); // Re-run this logic if any of these change.
+  }, [socket, isConnected, activeChatId, queryClient]);
 
-  // --- AUTO-SCROLLING ---
-  useEffect(() => {
-    // Automatically scroll to the bottom whenever new messages are added.
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  useEffect(() => { setTypingUsers([]); }, [activeChatId]);
+  useEffect(() => { messageEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  // --- UI EVENT HANDLERS ---
+  const stopTyping = () => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+    if (socket && activeChatId) {
+      socket.emit('stop_typing', { chat_id: activeChatId });
+    }
+  };
+
   const handleSendMessage = (e?: React.FormEvent) => {
-    e?.preventDefault(); // Prevent form submission from reloading the page
-    if (messageText.trim() && socket && activeChatId) {
-      // Emit the event to the server, just like we did in Postman.
-      socket.emit('send_message', {
+    e?.preventDefault();
+
+    const hasText = messageText.trim().length > 0;
+    const hasImage = !!imagePreviewUrl;
+
+    if ((hasText || hasImage) && socket && activeChatId) {
+      stopTyping();
+
+      const payload = {
         chat_id: activeChatId,
-        text_content: messageText,
-      });
-      setMessageText(''); // Clear the input field
+        text_content: hasText ? messageText.trim() : undefined,
+        image_data_url: hasImage ? imagePreviewUrl : undefined,
+      };
+
+      console.log('[CLIENT] Emitting "send_message" with payload:', payload);
+      socket.emit('send_message', payload);
+
+      setMessageText('');
+      setImagePreviewUrl(null);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Send message on "Enter" but allow new lines with "Shift + Enter"
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
-  const handleOpenPanel = () => {
-    setInfoPanelMounted(true);
-    setTimeout(() => setInfoPanelOpen(true), 10);
-  };
-
-  const handleClosePanel = () => {
-    setInfoPanelOpen(false);
-    setTimeout(() => setInfoPanelMounted(false), 300);
-  };
-
-  useEffect(() => {
-    // Panel animation effect
-    if (isInfoPanelMounted && !isInfoPanelOpen) {
-      const timer = setTimeout(() => setInfoPanelMounted(false), 300);
-      return () => clearTimeout(timer);
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessageText(e.target.value);
+    if (!socket || !activeChatId) return;
+    if (!typingTimeoutRef.current) {
+      socket.emit('start_typing', { chat_id: activeChatId });
+    } else {
+      clearTimeout(typingTimeoutRef.current);
     }
-  }, [isInfoPanelMounted, isInfoPanelOpen]);
+    typingTimeoutRef.current = setTimeout(() => { stopTyping(); }, 3000);
+  };
+
+  const handleAttachClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File is too large. Please select a file smaller than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setImagePreviewUrl(reader.result as string);
+    };
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+      alert('Failed to read file.');
+    };
+    e.target.value = '';
+  };
+
+  const getTypingMessage = () => {
+    if (typingUsers.length === 0) return null;
+    if (typingUsers.length === 1) return `${typingUsers[0].display_name} is typing...`;
+    return 'Several people are typing...';
+  };
 
   if (!activeChatId) {
     return (
       <main className={`${styles.chatPanel} ${styles.noChatSelected}`}>
-        <div className={styles.placeholder}>
-          <Image
-            src="/assets/splashscreen.svg"
-            alt="Illustration of global communication"
-            width={700}
-            height={500}
-            priority
-          />
-          <h2>Select a chat to start messaging</h2>
-          <p>Choose a conversation from the sidebar or search for a user.</p>
-        </div>
       </main>
     );
   }
 
   return (
     <main className={styles.chatPanel}>
-      <ChatHeader
-        chatDetails={chatDetails}
-        isLoading={isDetailsLoading}
-        onInfoClick={handleOpenPanel}
-      />
+      <ChatHeader chatDetails={chatDetails} isLoading={isDetailsLoading} onInfoClick={() => setCurrentPanel("chat")} />
 
       <div className={styles.messageArea}>
         {isMessagesLoading && <div>Loading messages...</div>}
@@ -145,51 +176,69 @@ const ChatPanel = ({ activeChatId }: ChatPanelProps) => {
             {messages.map((message: Message) => (
               <div key={message.id} className={styles.messageItem}>
                 <div className={styles.avatar}>
-                  <img
-                    src={getDisplayPictureUrl(message.sender_display_picture_url)}
-                    alt="avatar"
-                  />
+                  <img src={getDisplayPictureUrl(message.sender_display_picture_url)} alt="avatar" />
                 </div>
                 <div className={styles.messageContent}>
                   <div className={styles.messageInfo}>
                     <strong>{message.sender_display_name}</strong>
-                    <span className={styles.timestamp}>
-                      {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    <span className={styles.timestamp}>{new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
-                  <p>{message.text_content}</p>
+                  {message.image_data_url ? (
+                    <img src={message.image_data_url} alt="User upload" className={styles.chatImage} />
+                  ) : (
+                    <p>{message.text_content}</p>
+                  )}
                 </div>
               </div>
             ))}
-            {/* This empty div is the target for our auto-scroll */}
             <div ref={messageEndRef} />
           </div>
         )}
       </div>
 
+      <div className={styles.typingIndicator}>{getTypingMessage()}</div>
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+        accept="image/png, image/jpeg, image/gif"
+      />
+
       <form className={styles.messageInputWrapper} onSubmit={handleSendMessage}>
         <div className={styles.messageInput}>
+          {imagePreviewUrl && (
+            <div className={styles.imagePreviewContainer}>
+              <img src={imagePreviewUrl} alt="Preview" className={styles.imagePreview} />
+              <button
+                type="button"
+                className={styles.removeImageButton}
+                onClick={() => setImagePreviewUrl(null)}
+                aria-label="Remove image"
+              >
+                <HiXCircle size={24} />
+              </button>
+            </div>
+          )}
+
           <div className={styles.toolbarTop}>
             <button type="button"><FaBold /></button>
             <button type="button"><FaItalic /></button>
-            <button type="button"><FaLink /></button>
-            <button type="button"><FaListUl /></button>
-            <button type="button"><FaListOl /></button>
-            <button type="button"><HiCodeBracket /></button>
           </div>
           <textarea
-            placeholder={`Message ${chatDetails?.group_name || 'Direct Message'}`}
+            placeholder={imagePreviewUrl ? 'Add a caption...' : `Message ${chatDetails?.group_name || 'Direct Message'}`}
             value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
           />
           <div className={styles.toolbarBottom}>
             <div className={styles.leftActions}>
               <button type="button"><HiPlus size={20} /></button>
               <button type="button"><HiOutlineFaceSmile size={20} /></button>
-              <button type="button"><HiOutlineVideoCamera size={20} /></button>
-              <button type="button"><HiOutlineMicrophone size={20} /></button>
-              <button type="button"><HiOutlinePaperClip size={20} /></button>
+              <button type="button" onClick={handleAttachClick}>
+                <HiOutlinePaperClip size={20} />
+              </button>
             </div>
             <button type="submit" className={styles.sendButton}>
               <HiOutlinePaperAirplane size={20} />
@@ -197,14 +246,6 @@ const ChatPanel = ({ activeChatId }: ChatPanelProps) => {
           </div>
         </div>
       </form>
-
-      {isInfoPanelMounted && chatDetails && (
-        <ChatInfoPanel
-          isOpen={isInfoPanelOpen}
-          onClose={handleClosePanel}
-          chatDetails={chatDetails}
-        />
-      )}
     </main>
   );
 };

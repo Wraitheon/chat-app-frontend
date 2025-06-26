@@ -4,9 +4,10 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './SearchResults.module.scss';
 import { useSearchUsers } from './hooks/useSearchUsers';
-import { useCreateChat } from './hooks/useCreateChat';
+import { useCreateChat } from '@/app/hooks/useCreateChat';
 import { User } from '@/types/user.types';
 import { useDebounce } from '@/app/hooks/useDebounce';
+import { CreateChatPayload } from '@/types/chat.types';
 
 interface SearchResultsProps {
   searchTerm: string;
@@ -21,8 +22,11 @@ const SearchResults = ({ searchTerm, onResultClick }: SearchResultsProps) => {
   const { mutate: createNewChat, isPending: isCreating } = useCreateChat();
 
   const handleUserClick = (user: User) => {
+    if (isCreating) return;
+
     onResultClick();
-    const payload = { members: [user.id] };
+
+    const payload: CreateChatPayload = { members: [user.id] };
 
     createNewChat(payload, {
       onSuccess: (newChat) => {
@@ -31,17 +35,29 @@ const SearchResults = ({ searchTerm, onResultClick }: SearchResultsProps) => {
     });
   };
 
+  const getStatusMessage = () => {
+    if (isLoading) return 'Searching...';
+    if (isCreating) return 'Starting chat...';
+    if (users?.length === 0 && !isLoading) return 'No users found.';
+    return null;
+  }
+  const statusMessage = getStatusMessage();
+
+
   return (
     <div className={styles.resultsContainer}>
-      {isLoading && <div className={styles.info}>Searching...</div>}
-      {isCreating && <div className={styles.info}>Creating chat...</div>}
+      {statusMessage && <div className={styles.info}>{statusMessage}</div>}
 
-      {users && users.length > 0 && (
+      {users && users.length > 0 && !statusMessage && (
         <div className={styles.categoryHeader}>Users</div>
       )}
 
       {users?.map((user) => (
-        <div key={user.id} className={styles.userItem} onClick={() => handleUserClick(user)}>
+        <div
+          key={user.id}
+          className={`${styles.userItem} ${isCreating ? styles.disabled : ''}`}
+          onClick={() => handleUserClick(user)}
+        >
           <Image
             src={user.display_picture_url || '/assets/default-avatar.png'}
             alt={user.display_name || 'avatar'}
@@ -55,8 +71,6 @@ const SearchResults = ({ searchTerm, onResultClick }: SearchResultsProps) => {
           </div>
         </div>
       ))}
-
-      {users?.length === 0 && !isLoading && <div className={styles.info}>No users found.</div>}
     </div>
   );
 };

@@ -1,0 +1,121 @@
+@import '../../../styles/variables.scss';
+
+.userInfoPanel {
+  width: 360px;
+
+  .editButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-ag-text-secondary;
+    padding: $spacing-xs;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: $color-bg-hover;
+      color: $color-text-primary;
+    }
+  }
+
+  .profileHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: $spacing-lg;
+
+    >.profileAvatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: $spacing-md;
+      border: 3px solid $color-border-default;
+    }
+
+    >.displayName {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: $color-text-primary;
+    }
+
+    >.username {
+      margin: 0;
+      font-size: 0.9rem;
+      color: $color-ag-text-secondary;
+    }
+  }
+
+  .statusMessage {
+    background-color: $color-background;
+    border-left: 4px solid $color-text-accent;
+    padding: $spacing-sm $spacing-md;
+    margin-bottom: $spacing-lg;
+    border-radius: 0 $border-radius-sm $border-radius-sm 0;
+
+    >p {
+      margin: 0;
+      font-style: italic;
+      color: $color-text-primary;
+    }
+  }
+
+  .userInfoList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    >.infoItem {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-sm;
+      background-color: $color-background;
+      border-radius: $border-radius-sm;
+
+      >.label {
+        font-weight: 500;
+        color: $color-ag-text-secondary;
+      }
+
+      >.value {
+        color: $color-text-primary;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+    width: 100%;
+    padding: $spacing-md;
+    border: none;
+    border-radius: $border-radius-md;
+    background-color: $color-primary;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: $color-bg-hover;
+    }
+
+    &:disabled {
+      background-color: $color-primary;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+}

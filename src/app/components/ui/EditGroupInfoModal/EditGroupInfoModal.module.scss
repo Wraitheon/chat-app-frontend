@@ -1,0 +1,136 @@
+@import "../../../styles/variables.scss";
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xl;
+
+  >.iconUploader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-lg;
+
+    >.iconPreview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: $color-bg-hover-light;
+      border: none;
+    }
+
+    >.uploadButton {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-xs $spacing-md;
+      background-color: $color-background;
+      color: $color-text-accent;
+      border: 1px solid $color-border-hover;
+      border-radius: $border-radius-md;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: $font-size-sm;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: $color-bg-active-item;
+        border-color: $color-text-accent;
+      }
+    }
+
+    >.fileInput {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1;
+    }
+  }
+
+  >.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    width: 100%;
+
+    >.label {
+      font-weight: 600;
+      color: $color-primary;
+      font-size: $font-size-sm;
+    }
+
+    >.inputField {
+      width: 100%;
+      padding: $spacing-md;
+      border: none;
+      background-color: $color-bg-content-area;
+      border-radius: $border-radius-md;
+      color: $color-text-primary;
+      font-size: $font-size-md;
+      transition: box-shadow 0.2s ease;
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($color-text-accent, 0.4);
+      }
+    }
+  }
+
+  >.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    margin-top: $spacing-sm;
+    width: 100%;
+
+    >.buttonSecondary,
+    >.buttonPrimary {
+      padding: $spacing-sm $spacing-lg;
+      border: none;
+      border-radius: $border-radius-md;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    >.buttonSecondary {
+      background-color: $color-bg-hover-light;
+      color: $color-ag-text-secondary;
+
+      &:hover:not(:disabled) {
+        background-color: $color-border-default;
+      }
+    }
+
+    >.buttonPrimary {
+      background-color: $color-text-accent;
+      color: $color-text-white;
+
+      &:hover:not(:disabled) {
+        background-color: darken($color-text-accent, 10%);
+      }
+
+      >.spinner {
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}

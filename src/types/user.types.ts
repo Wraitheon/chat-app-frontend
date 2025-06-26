@@ -5,5 +5,5 @@ export interface User {
   display_name: string;
   display_picture_url?: string | null;
   status_message?: string | null;
-  created_at: string;
+  created_at?: string;
 }

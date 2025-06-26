@@ -1,0 +1,87 @@
+@import "../../../styles/variables.scss";
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px) scale(0.98);
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $color-bg-overlay-dark;
+  backdrop-filter: blur($blur-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal;
+  animation: fadeIn 0.3s ease-out;
+
+  >.modalContent {
+    background-color: $color-bg-sidebar-light;
+    border-radius: $border-radius-xl;
+    box-shadow: $box-shadow-modal;
+    width: 90%;
+    max-width: $layout-modal-max-width;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+
+    >.modalHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-lg $spacing-xl;
+      border-bottom: none;
+      flex-shrink: 0;
+
+      >.modalTitle {
+        font-size: 1.5rem; // 24px
+        font-weight: 700;
+        color: $color-primary;
+        margin: 0;
+      }
+
+      >.closeButton {
+        background: transparent;
+        border: 1px solid $color-border-default;
+        cursor: pointer;
+        color: $color-ag-text-secondary;
+        padding: $spacing-xs;
+        border-radius: $border-radius-md;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        &:hover {
+          background-color: $color-bg-hover;
+          border-color: $color-border-hover;
+        }
+      }
+    }
+
+    >.modalBody {
+      padding: 0 $spacing-xl $spacing-lg;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+  }
+}

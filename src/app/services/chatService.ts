@@ -1,4 +1,4 @@
-import { Chat, ChatDetails, NewChatData } from "@/types/chat.types";
+import { Chat, ChatDetails, CreateChatPayload, NewChatData } from "@/types/chat.types";
 import { apiClient } from "../lib/apiClient";
 import { API_ROUTES } from "../lib/apiRoutes";
 
@@ -39,28 +39,55 @@ export const markChatAsRead = async (chatId: string): Promise<void> => {
   });
 };
 
-export const createChat = async (payload: {
-  members: string[];
-  group_name?: string;
-  group_avatar_url?: string;
-}) => {
+export const createChatOrGroup = async (payload: CreateChatPayload): Promise<NewChatData> => {
   const endpoint = API_ROUTES.chats.createChat;
+
+  let body: FormData | string;
+  const headers: HeadersInit = {};
+
+  if (payload.group_avatar) {
+    const formData = new FormData();
+
+    if (payload.group_name) {
+      formData.append('group_name', payload.group_name);
+    }
+
+    payload.members.forEach((memberId: string) => {
+      formData.append('members[]', memberId);
+    });
+
+    formData.append('group_avatar', payload.group_avatar);
+
+    body = formData;
+  } else {
+    body = JSON.stringify({
+      members: payload.members,
+      group_name: payload.group_name,
+    });
+    headers['Content-Type'] = 'application/json';
+  }
+
   return await apiClient<NewChatData>(endpoint, {
     method: 'POST',
-    body: JSON.stringify(payload),
+    headers,
+    body,
   });
 };
 
-export const updateChatDetails = async ({ chatId, payload }: {
-  chatId: string,
-  payload: {
-    group_name?: string,
-    group_avatar_url?: string
-  }
+
+export const updateChatDetails = async ({ chatId, formData, group_name }: {
+  chatId: string;
+  formData: FormData;
+  group_name?: string;
 }): Promise<NewChatData> => {
   const endpoint = API_ROUTES.chats.updateChatDetails;
+
+  if (group_name) {
+    formData.append('group_name', group_name);
+  }
+
   return await apiClient<NewChatData>(endpoint(chatId), {
     method: 'PATCH',
-    body: JSON.stringify(payload),
+    body: formData,
   });
 };

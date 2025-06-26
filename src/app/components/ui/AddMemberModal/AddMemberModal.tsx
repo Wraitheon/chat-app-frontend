@@ -1,4 +1,3 @@
-// app/components/ui/AddMemberModal/AddMemberModal.tsx
 'use client';
 
 import { useState, useEffect } from 'react';

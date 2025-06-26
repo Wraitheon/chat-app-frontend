@@ -5,8 +5,8 @@ export const API_ROUTES = {
   },
   users: {
     search: (query: string) => `/users/?search=${query}`,
-    getUser: `/me`,
-    updateUser: `me`,
+    getUser: `/users/me`,
+    updateUser: `/users/me`,
   },
   chats: {
     getChats: `/chats/`,
@@ -15,7 +15,7 @@ export const API_ROUTES = {
     removeMemberFromChat: (chatId: string, userId: string) => `/chats/${chatId}/members/${userId}`,
     markChatAsRead: (chatId: string) => `/chats/${chatId}/read`,
     createChat: `/chats`,
-    updateChatDetails: (chatId: string) => `/api/chats/${chatId}`,
+    updateChatDetails: (chatId: string) => `/chats/${chatId}`,
   },
   messages: {
     getMessages: (chatId: string) => `/chats/${chatId}/messages`,
