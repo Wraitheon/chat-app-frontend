@@ -24,9 +24,6 @@ const PrimarySidebar = ({ onCreateGroupClick, setCurrentPanel }: PrimarySidebarP
 
   const navItems = [
     { name: 'Home', icon: <HiHome size={24} /> },
-    { name: 'Notifications', icon: <HiBell size={24} /> },
-    { name: 'Chat', icon: <HiChatBubbleOvalLeftEllipsis size={24} /> },
-    { name: 'More', icon: <HiEllipsisHorizontal size={24} /> },
   ];
 
   useEffect(() => {

@@ -119,11 +119,6 @@ const ChatPanel = ({ activeChatId, setCurrentPanel }: ChatPanelProps) => {
               </button>
             </div>
           )}
-
-          <div className={styles.toolbarTop}>
-            <button type="button"><FaBold /></button>
-            <button type="button"><FaItalic /></button>
-          </div>
           <textarea
             placeholder={imagePreviewUrl ? 'Add a caption...' : `Message ${chatDetails?.group_name || 'Direct Message'}`}
             value={messageText}
@@ -133,8 +128,6 @@ const ChatPanel = ({ activeChatId, setCurrentPanel }: ChatPanelProps) => {
           />
           <div className={styles.toolbarBottom}>
             <div className={styles.leftActions}>
-              <button type="button"><HiPlus size={20} /></button>
-              <button type="button"><HiOutlineFaceSmile size={20} /></button>
               <button type="button" onClick={handleAttachClick}>
                 <HiOutlinePaperClip size={20} />
               </button>
