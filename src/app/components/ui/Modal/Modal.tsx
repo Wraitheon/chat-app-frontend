@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import styles from './Modal.module.scss';
 import { HiXMark } from 'react-icons/hi2';
 
@@ -43,7 +42,7 @@ const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
     return null;
   }
 
-  return createPortal(
+  return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
       <div className={styles.modalContent} ref={modalRef} role="dialog" aria-modal="true">
         <header className={styles.modalHeader}>
@@ -56,8 +55,7 @@ const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
           {children}
         </div>
       </div>
-    </div>,
-    document.getElementById('modal-root') as HTMLElement
+    </div>
   );
 };
 
