@@ -1,30 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
+import { useAuth } from '@/app/components/providers/AuthProvider';
 import { API_ROUTES } from '@/app/lib/apiRoutes';
-
-type RegistrationData = {
-  username: string;
-  email: string;
-  password: string;
-  displayName: string;
-};
-
-type User = {
-  id: string;
-  username: string;
-  email: string;
-  display_name: string;
-  display_picture_url?: string | null;
-  status_message?: string | null;
-};
-
-type RegisterResponse = {
-  status: string;
-  data: {
-    user: User;
-    token: string;
-  };
-  message?: string;
-};
+import { RegisterResponse, RegistrationData } from '@/types/auth.types';
+import { User } from '@/types/user.types';
 
 const registerUser = async (userData: RegistrationData): Promise<{ user: User; token: string }> => {
   const requestBody = {
@@ -34,16 +14,12 @@ const registerUser = async (userData: RegistrationData): Promise<{ user: User; t
     display_name: userData.displayName,
   };
 
-  console.log('Attempting registration for user:', userData.username, 'with email:', userData.email);
-
   const response = await fetch(API_ROUTES.auth.register, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestBody),
     credentials: 'include',
   });
-
-  console.log('Registration response status:', response.status);
 
   const data: RegisterResponse = await response.json();
 
@@ -53,13 +29,24 @@ const registerUser = async (userData: RegistrationData): Promise<{ user: User; t
     throw new Error(errorMessage);
   }
 
-  console.log('Registration successful for user:', data.data.user.username);
-
   return data.data;
 };
 
 export const useRegister = () => {
+  const { setUser } = useAuth();
+  const router = useRouter();
+
   return useMutation({
     mutationFn: registerUser,
+    onSuccess: (data) => {
+      setUser(data.user);
+
+      toast.success(`Welcome, ${data.user.display_name}! You are now logged in.`);
+
+      router.push('/chat');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
   });
 };

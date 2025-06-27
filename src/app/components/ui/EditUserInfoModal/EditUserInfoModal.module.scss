@@ -4,125 +4,129 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-lg;
-}
 
-.iconUploader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-md;
-
-  .iconPreview {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid $color-border-default;
-  }
-
-  .uploadButton {
-    display: inline-flex;
+  >.iconUploader {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: $spacing-sm;
-    padding: $spacing-sm $spacing-md;
-    background-color: $color-bg-content-area;
-    color: $color-text-accent;
-    border: 1px solid $color-text-accent;
-    border-radius: $border-radius-sm;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    gap: $spacing-md;
 
-    &:hover {
-      background-color: lighten($color-bg-active-item, 5%);
+    >.iconPreview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid $color-border-default;
+    }
+
+    >.uploadButton {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
+      background-color: $color-bg-content-area;
+      color: $color-text-accent;
+      border: 1px solid $color-text-accent;
+      border-radius: $border-radius-sm;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: lighten($color-bg-active-item, 5%);
+      }
+    }
+
+    >.fileInput {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1;
     }
   }
 
-  .fileInput {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
+  >.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    >label {
+      font-weight: 500;
+      color: $color-text-primary;
+    }
+
+    >.inputField,
+    >.textareaField {
+      width: 100%;
+      padding: $spacing-sm;
+      border: 1px solid $color-border-default;
+      background-color: $color-background;
+      border-radius: $border-radius-sm;
+      color: $color-text-primary;
+      font-size: 1rem;
+      font-family: inherit;
+
+      &:focus {
+        outline: none;
+        border-color: $color-text-accent;
+        box-shadow: 0 0 0 2px rgba($color-text-accent, 0.2);
+      }
+    }
+
+    >.textareaField {
+      resize: vertical;
+      min-height: 80px;
+    }
   }
-}
 
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
+  >.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+    margin-top: $spacing-md;
 
-  label {
-    font-weight: 500;
-    color: $color-text-primary;
-  }
-}
+    >.buttonSecondary,
+    >.buttonPrimary {
+      padding: $spacing-sm $spacing-lg;
+      border: none;
+      border-radius: $border-radius-sm;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
 
-.inputField,
-.textareaField {
-  width: 100%;
-  padding: $spacing-sm;
-  border: 1px solid $color-border-default;
-  background-color: $color-background;
-  border-radius: $border-radius-sm;
-  color: $color-text-primary;
-  font-size: 1rem;
-  font-family: inherit;
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
 
-  &:focus {
-    outline: none;
-    border-color: $color-text-accent;
-    box-shadow: 0 0 0 2px rgba($color-text-accent, 0.2);
-  }
-}
+    >.buttonSecondary {
+      background-color: $color-bg-hover;
+      color: $color-text-primary;
+      border: 1px solid $color-border-default;
 
-.textareaField {
-  resize: vertical;
-  min-height: 80px;
-}
+      &:hover:not(:disabled) {
+        background-color: darken($color-bg-hover, 5%);
+      }
+    }
 
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: $spacing-md;
-  margin-top: $spacing-md;
-}
+    >.buttonPrimary {
+      background-color: $color-text-accent;
+      color: $color-text-white;
 
-.buttonSecondary,
-.buttonPrimary {
-  padding: $spacing-sm $spacing-lg;
-  border: none;
-  border-radius: $border-radius-sm;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
+      &:hover:not(:disabled) {
+        background-color: darken($color-text-accent, 10%);
+      }
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-.buttonSecondary {
-  background-color: $color-bg-hover;
-  color: $color-text-primary;
-  border: 1px solid $color-border-default;
-
-  &:hover:not(:disabled) {
-    background-color: darken($color-bg-hover, 5%);
-  }
-}
-
-.buttonPrimary {
-  background-color: $color-text-accent;
-  color: $color-text-white;
-
-  &:hover:not(:disabled) {
-    background-color: darken($color-text-accent, 10%);
+      >.spinner {
+        animation: spin 1s linear infinite;
+      }
+    }
   }
 }
 
@@ -130,8 +134,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.spinner {
-  animation: spin 1s linear infinite;
 }

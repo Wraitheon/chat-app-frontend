@@ -5,6 +5,7 @@ import QueryProvider from './components/providers/QueryProvider';
 import { AuthProvider } from "./components/providers/AuthProvider";
 import { righteous, roboto } from './fonts';
 import { SocketProvider } from './components/providers/SocketProvider';
+import { Toaster } from "react-hot-toast";
 
 // This imports the Inter font from Google Fonts.
 const inter = Inter({ subsets: ["latin"] });
@@ -35,6 +36,7 @@ export default function RootLayout({
             </SocketProvider>
           </AuthProvider>
         </QueryProvider>
+        <Toaster position="top-center" reverseOrder={false} />
       </body>
     </html>
   );

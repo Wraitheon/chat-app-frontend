@@ -5,30 +5,27 @@ import Input from '../../ui/Input/Input';
 import styles from './LoginForm.module.scss';
 import Link from 'next/link';
 import { useLogin } from './hooks/useLogin';
-import { useAuth } from '@/app/components/providers/AuthProvider';
-import { useRouter } from 'next/navigation';
+import { LoginCredentials, LoginErrors } from '@/types/auth.types';
 
 const LoginForm = () => {
-  const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<LoginCredentials>({
     identifier: '',
     password: '',
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<LoginErrors>({
     identifier: '',
     password: '',
   });
 
-  const { setUser } = useAuth();
   const { mutate: performLogin, isPending, error } = useLogin();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    if (errors[name as keyof typeof errors]) {
+    if (errors[name as keyof LoginErrors]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
@@ -51,16 +48,7 @@ const LoginForm = () => {
       password: formData.password,
     };
 
-    performLogin(credentialsForApi, {
-      onSuccess: (data) => {
-        setUser(data.user);
-
-        router.push('/chat');
-      },
-      onError: (error) => {
-        console.error('Login error:', error);
-      }
-    });
+    performLogin(credentialsForApi);
   };
 
   return (

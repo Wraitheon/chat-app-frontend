@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './AddMemberModal.module.scss';
 import Image from 'next/image';
 import { HiXMark, HiMagnifyingGlass, HiUserPlus } from 'react-icons/hi2';
 import { useSearchUsers } from '../SearchResults/hooks/useSearchUsers';
 import { useManageChatMembers } from '../../chat/ChatInfoPanel/hooks/useManageChatMembers';
+import { useDebounce } from '@/app/hooks/useDebounce';
 import { User } from '@/types/user.types';
 import { ChatMember } from '@/types/chat.types';
 
@@ -18,14 +19,10 @@ interface AddMemberModalProps {
 
 const AddMemberModal = ({ isOpen, onClose, chatId, currentMembers }: AddMemberModalProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
   const { data: searchResults, isLoading: isSearching } = useSearchUsers(debouncedSearchTerm);
   const { addMember, isAddingMember } = useManageChatMembers(chatId);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchTerm(searchTerm), 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
 
   const handleAddMember = (user: User) => {
     addMember(user.id, {
@@ -44,6 +41,10 @@ const AddMemberModal = ({ isOpen, onClose, chatId, currentMembers }: AddMemberMo
   const availableUsers = searchResults?.filter(
     (user) => !currentMembers.some((member) => member.id === user.id)
   );
+
+  const showLoading = isSearching;
+  const showResults = debouncedSearchTerm && !isSearching && availableUsers && availableUsers.length > 0;
+  const showNoResultsMessage = debouncedSearchTerm && !isSearching && availableUsers?.length === 0;
 
   if (!isOpen) return null;
 
@@ -69,17 +70,16 @@ const AddMemberModal = ({ isOpen, onClose, chatId, currentMembers }: AddMemberMo
         </div>
 
         <div className={styles.searchResults}>
-          {isSearching && <div className={styles.info}>Searching...</div>}
-          {debouncedSearchTerm && availableUsers && availableUsers.length > 0 && (
+          {showLoading && <div className={styles.info}>Searching...</div>}
+
+          {showResults &&
             availableUsers.map(user => (
               <div key={user.id} className={styles.userItem}>
                 <Image src={user.display_picture_url || '/assets/default-avatar.png'} alt="avatar" width={40} height={40} style={{ borderRadius: '50%' }} />
-
                 <div className={styles.userInfo}>
                   <span className={styles.primaryText}>{user.display_name}</span>
                   <span className={styles.secondaryText}>@{user.username}</span>
                 </div>
-
                 <button
                   className={styles.addButton}
                   onClick={() => handleAddMember(user)}
@@ -90,8 +90,9 @@ const AddMemberModal = ({ isOpen, onClose, chatId, currentMembers }: AddMemberMo
                 </button>
               </div>
             ))
-          )}
-          {debouncedSearchTerm && !isSearching && availableUsers?.length === 0 && (
+          }
+
+          {showNoResultsMessage && (
             <div className={styles.info}>No new users found.</div>
           )}
         </div>

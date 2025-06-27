@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import Input from '../../ui/Input/Input';
 import styles from './SignupForm.module.scss';
 import { useRegister } from './hooks/useRegister';
-import { useAuth } from '@/app/components/providers/AuthProvider';
 
 const checkUsernameAvailability = async (username: string): Promise<boolean> => {
   console.log(`Checking username: ${username}`);
@@ -17,7 +17,6 @@ const checkUsernameAvailability = async (username: string): Promise<boolean> => 
 
 const checkPasswordStrength = (password: string) => {
   if (!password) return { strength: '', color: '', score: 0 };
-
   let score = 0;
   const checks = {
     length: password.length >= 8,
@@ -26,23 +25,17 @@ const checkPasswordStrength = (password: string) => {
     numbers: /\d/.test(password),
     special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
   };
-
-  // Calculate score
   if (checks.length) score++;
   if (checks.lowercase) score++;
   if (checks.uppercase) score++;
   if (checks.numbers) score++;
   if (checks.special) score++;
 
-  // Determine strength and color
-  if (score < 3) {
-    return { strength: 'Weak', color: '#ff4444', score };
-  } else if (score < 4) {
-    return { strength: 'Medium', color: '#ffaa00', score };
-  } else {
-    return { strength: 'Strong', color: '#00aa44', score };
-  }
+  if (score < 3) return { strength: 'Weak', color: '#ff4444', score };
+  if (score < 4) return { strength: 'Medium', color: '#ffaa00', score };
+  return { strength: 'Strong', color: '#00aa44', score };
 };
+
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -52,17 +45,15 @@ const SignupForm = () => {
     password: '',
   });
 
-  // State for validation feedback
   const [usernameError, setUsernameError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState({ strength: '', color: '', score: 0 });
+
   const { mutate: performRegister, isPending, error } = useRegister();
-  const { setUser } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    // Reset username error on change
     if (name === 'username') {
       setUsernameError('');
     }
@@ -83,36 +74,28 @@ const SignupForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!formData.email.trim()) {
-      alert('Email is required');
+    if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) {
+      toast.error('Please enter a valid email address.');
       return;
     }
-
-    if (!formData.username.trim()) {
-      alert('Username is required');
-      return;
-    }
-
     if (!formData.displayName.trim()) {
-      alert('Display name is required');
+      toast.error('Display name is required.');
+      return;
+    }
+    if (!formData.username.trim() || formData.username.length < 3) {
+      toast.error('Username must be at least 3 characters long.');
+      return;
+    }
+    if (usernameError) {
+      toast.error('That username is not available.');
+      return;
+    }
+    if (passwordStrength.score < 3) {
+      toast.error('Please choose a stronger password.');
       return;
     }
 
-    if (!formData.password.trim()) {
-      alert('Password is required');
-      return;
-    }
-
-    performRegister(formData, {
-      onSuccess: (data) => {
-        setUser(data.user);
-        alert(`Registration successful! Welcome, ${data.user.display_name}!`);
-      },
-      onError: (error) => {
-        console.error('Registration error:', error);
-      }
-    });
+    performRegister(formData);
   };
 
   return (

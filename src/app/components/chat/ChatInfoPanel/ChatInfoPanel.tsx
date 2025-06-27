@@ -49,16 +49,6 @@ const ChatInfoPanel = ({ isOpen, onClose, chatDetails, onChatUpdate }: ChatInfoP
 
   return (
     <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-        }}
-      />
       <AddMemberModal
         isOpen={isAddModalOpen}
         onClose={() => setAddModalOpen(false)}

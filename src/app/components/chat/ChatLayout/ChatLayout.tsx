@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import PrimarySidebar from '../PrimarySidebar/PrimarySidebar';
 import SecondarySidebar from '../SecondarySidebar/SecondarySidebar';
 import ChatPanel from '../ChatPanel/ChatPanel';
@@ -10,58 +9,36 @@ import { HiMagnifyingGlass } from 'react-icons/hi2';
 import CreateGroupChatModal from '../CreateGroupChatModal/CreateGroupChatModal';
 import UserInfoPanel from '../UserInfoPanel/UserInfoPanel';
 import ChatInfoPanel from '../ChatInfoPanel/ChatInfoPanel';
-import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../../providers/AuthProvider';
-import { useChatDetails } from '../ChatHeader/hooks/useChatDetails';
+import { useChatLayout } from './hooks/useChatLayout';
 
 interface ChatLayoutProps {
   initialActiveChatId?: string | null;
 }
 
 const ChatLayout = ({ initialActiveChatId = null }: ChatLayoutProps) => {
-  const [activeChatId, setActiveChatId] = useState<string | null>(initialActiveChatId);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [isGroupModalOpen, setGroupModalOpen] = useState(false);
-  const [currentPanel, setCurrentPanel] = useState<"user" | "chat" | null>(null);
-
-  const queryClient = useQueryClient();
-  const { user: currentUser } = useAuth();
-  const { data: chatDetails } = useChatDetails(activeChatId);
-
-  const handleUserUpdate = () => {
-    queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-  };
-
-  const handleChatUpdate = () => {
-    if (activeChatId) {
-      queryClient.invalidateQueries({ queryKey: ['chatDetails', activeChatId] });
-      queryClient.invalidateQueries({ queryKey: ['chats'] });
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    if (activeChatId) {
-      setSearchTerm('');
-    }
-  }, [activeChatId]);
-
-  const handleResultClick = () => {
-    setSearchTerm('');
-  };
+  const {
+    activeChatId,
+    searchTerm,
+    isGroupModalOpen,
+    currentPanel,
+    currentUser,
+    chatDetails,
+    setSearchTerm,
+    setCurrentPanel,
+    openGroupModal,
+    closeGroupModal,
+    closePanel,
+    handleUserUpdate,
+    handleChatUpdate,
+    handleResultClick,
+    handleUserSelect,
+  } = useChatLayout(initialActiveChatId);
 
   return (
     <>
       <CreateGroupChatModal
         isOpen={isGroupModalOpen}
-        onClose={() => setGroupModalOpen(false)}
+        onClose={closeGroupModal}
       />
       <div className={styles.chatLayoutWrapper}>
         <div className={styles.chatLayout}>
@@ -77,10 +54,11 @@ const ChatLayout = ({ initialActiveChatId = null }: ChatLayoutProps) => {
                 />
               </div>
 
-              {debouncedSearchTerm && (
+              {searchTerm && (
                 <SearchResults
-                  searchTerm={debouncedSearchTerm}
+                  searchTerm={searchTerm}
                   onResultClick={handleResultClick}
+                  onUserSelect={handleUserSelect}
                 />
               )}
             </div>
@@ -88,7 +66,7 @@ const ChatLayout = ({ initialActiveChatId = null }: ChatLayoutProps) => {
 
           <div className={styles.mainContent}>
             <PrimarySidebar
-              onCreateGroupClick={() => setGroupModalOpen(true)}
+              onCreateGroupClick={openGroupModal}
               setCurrentPanel={setCurrentPanel}
             />
             <SecondarySidebar activeChatId={activeChatId} />
@@ -103,7 +81,7 @@ const ChatLayout = ({ initialActiveChatId = null }: ChatLayoutProps) => {
       {currentUser && (
         <UserInfoPanel
           isOpen={currentPanel === 'user'}
-          onClose={() => setCurrentPanel(null)}
+          onClose={closePanel}
           userDetails={currentUser}
           onUserUpdate={handleUserUpdate}
         />
@@ -112,7 +90,7 @@ const ChatLayout = ({ initialActiveChatId = null }: ChatLayoutProps) => {
       {chatDetails && (
         <ChatInfoPanel
           isOpen={currentPanel === 'chat'}
-          onClose={() => setCurrentPanel(null)}
+          onClose={closePanel}
           chatDetails={chatDetails}
           onChatUpdate={handleChatUpdate}
         />

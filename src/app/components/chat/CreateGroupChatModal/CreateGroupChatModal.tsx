@@ -1,16 +1,10 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Modal from '../../ui/Modal/Modal';
 import styles from './CreateGroupChatModal.module.scss';
-import { useSearchUsers } from '../../ui/SearchResults/hooks/useSearchUsers';
-import { useCreateChat } from '@/app/hooks/useCreateChat';
-import { useAuth } from '@/app/components/providers/AuthProvider';
-import { User } from '@/types/user.types';
 import { HiXCircle, HiPhoto, HiArrowPath } from 'react-icons/hi2';
-import { CreateChatPayload } from '@/types/chat.types';
+import { useCreateGroupChatForm } from './hooks/useCreateGroupChatForm';
 
 interface CreateGroupChatModalProps {
   isOpen: boolean;
@@ -18,76 +12,24 @@ interface CreateGroupChatModalProps {
 }
 
 const CreateGroupChatModal = ({ isOpen, onClose }: CreateGroupChatModalProps) => {
-  const { user: currentUser } = useAuth();
-  const router = useRouter();
-
-  const [groupName, setGroupName] = useState('');
-  const [groupAvatarFile, setGroupAvatarFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-
-  const { data: searchResults, isLoading: isSearching } = useSearchUsers(debouncedSearchTerm);
-  const { mutate: createChat, isPending: isCreating } = useCreateChat();
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearchTerm(searchTerm), 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    if (!groupAvatarFile) {
-      setPreviewUrl(null);
-      return;
-    };
-    const objectUrl = URL.createObjectURL(groupAvatarFile);
-    setPreviewUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [groupAvatarFile]);
-
-  const handleSelectUser = (user: User) => {
-    if (user.id === currentUser?.id || selectedUsers.some(su => su.id === user.id)) {
-      return;
-    }
-    setSelectedUsers(prev => [...prev, user]);
-    setSearchTerm('');
-  };
-
-  const handleRemoveUser = (userId: string) => {
-    setSelectedUsers(prev => prev.filter(u => u.id !== userId));
-  };
-
-  const resetState = () => {
-    setGroupName('');
-    setGroupAvatarFile(null);
-    setPreviewUrl(null);
-    setSelectedUsers([]);
-    setSearchTerm('');
-    setDebouncedSearchTerm('');
-  };
-
-  const handleClose = () => {
-    resetState();
-    onClose();
-  };
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!groupName.trim() || selectedUsers.length === 0 || !currentUser) return;
-
-    const payload: CreateChatPayload = {
-      group_name: groupName.trim(),
-      members: selectedUsers.map(u => u.id),
-      group_avatar: groupAvatarFile,
-    };
-
-    createChat(payload, {
-      onSuccess: (newChat) => {
-        handleClose();
-        router.push(`/chat/${newChat.id}`);
-      },
-    });
-  };
+  const {
+    groupName,
+    groupAvatarFile,
+    previewUrl,
+    selectedUsers,
+    searchTerm,
+    debouncedSearchTerm,
+    searchResults,
+    isSearching,
+    isCreating,
+    setGroupName,
+    setGroupAvatarFile,
+    setSearchTerm,
+    handleSelectUser,
+    handleRemoveUser,
+    handleSubmit,
+    handleClose,
+  } = useCreateGroupChatForm(onClose);
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Create a New Group">
